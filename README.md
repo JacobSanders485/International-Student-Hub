@@ -1,43 +1,22 @@
-# International Student Hub (React)
+# UniPath
 
-A small React/Vite implementation of Task 2: build a personal transition checklist.
+A React + Vite prototype for helping international students organize university transition resources, checklists, and milestones.
 
-## Requirements
-- Node.js (LTS recommended) and npm
-- Internet connection for the first dependency installation
+## Run locally
 
-Having React installed in another project does not automatically install it here. This project includes its own dependencies.
-
-## Run on Windows
-1. Extract `transition-hub-react.zip`.
-2. Open the extracted `transition-hub-react` folder in VS Code.
-3. Open Terminal > New Terminal.
-4. Run:
-
-   ```powershell
-   npm install
-   npm run dev
-   ```
-
-5. Open the local address Vite prints (usually http://localhost:5173).
-
-## Build a production version
-```powershell
-npm run build
+```bash
+npm install
+npm run dev
 ```
-The generated website files will be in `dist/`.
 
-## Included interactions
-- Home page with navigation to checklist creation and help topics
-- Select a transition type
-- Enter current status, target status, and expected date
-- Generate sample tasks
-- Mark tasks complete and edit suggested dates
-- View completion dashboard and download checklist as text
-- Save progress in browser localStorage
+## Local demo accounts
 
-## Notes
-- Data is saved in the browser on the same computer/browser; it is not shared between teammates.
-- The sample tasks and dates are illustrative only, not official immigration instructions or legal advice.
-- Confirm individual requirements and deadlines with UTD International Student Services Office (ISSO).
-- The prototype uses hardcoded sample task templates and does not use a backend/database.
+- Create an account from the sign-in screen, then sign in with that email and password.
+- Accounts, passwords, checklists, and plans are stored in this browser's `localStorage`.
+- Use the **Demo Controls** button to jump to pages, switch between accounts, or reset the current account's checklist and plan.
+- These are prototype-only accounts, not secure authentication. Passwords are stored locally in readable browser storage. Do not use a real or reused password.
+- Data is browser/device-specific and is not synchronized across devices. Clearing browser storage removes the accounts and their data.
+
+## Images
+
+UT Dallas campus and student-life images are in `public/images/` and are loaded locally by the app.
