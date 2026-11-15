@@ -197,6 +197,10 @@ function App() {
   const [filter, setFilter] = useState("All");
   const [helpSearch, setHelpSearch] = useState("");
   const [helpCategory, setHelpCategory] = useState("All");
+  const [helpFavoritesOnly, setHelpFavoritesOnly] = useState(false);
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem(`unipath.favorites.${localStorage.getItem(SESSION_KEY) || "guest"}`) || "[]"));
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [plan, setPlan] = useState(() => {
     const id = localStorage.getItem(SESSION_KEY);
     return id ? loadUserPlan(id) : loadPlan();
@@ -217,6 +221,10 @@ function App() {
   useEffect(() => {
     if (authUser) localStorage.setItem(userStorageKey(authUser.id, "plan"), JSON.stringify(plan));
   }, [plan, authUser]);
+
+  useEffect(() => {
+    if (authUser) localStorage.setItem(`unipath.favorites.${authUser.id}`, JSON.stringify(favorites));
+  }, [favorites, authUser]);
 
   useEffect(() => {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
@@ -271,11 +279,29 @@ function App() {
     return { done, total, percent: total ? Math.round(done / total * 100) : 0 };
   }, [plan.milestones]);
 
+  const allDatedItems = useMemo(() => [
+    ...state.tasks.filter(item => item.due).map(item => ({ id: `task-${item.id}`, title: item.name, date: item.due, done: item.done, kind: "Task" })),
+    ...plan.milestones.filter(item => item.due).map(item => ({ id: `milestone-${item.id}`, title: item.title, date: item.due, done: item.done, kind: "Milestone" }))
+  ].sort((a, b) => a.date.localeCompare(b.date)), [state.tasks, plan.milestones]);
+
+  const notificationItems = useMemo(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const soon = new Date(today); soon.setDate(soon.getDate() + 7);
+    return allDatedItems.filter(item => !item.done).map(item => ({
+      ...item, days: Math.round((new Date(`${item.date}T12:00:00`) - today) / 86400000)
+    })).filter(item => item.days < 0 || item.days <= 7).sort((a, b) => a.days - b.days);
+  }, [allDatedItems]);
+
+  function toggleFavorite(title) {
+    setFavorites(current => current.includes(title) ? current.filter(item => item !== title) : [...current, title]);
+  }
+
   function finishLogin(user) {
     setAuthUser(user);
     localStorage.setItem(SESSION_KEY, user.id);
     setState(loadUserState(user.id));
     setPlan(loadUserPlan(user.id));
+    setFavorites(JSON.parse(localStorage.getItem(`unipath.favorites.${user.id}`) || "[]"));
     setChosenType(loadUserState(user.id).type);
     setStep("home");
     setAuthError("");
@@ -523,7 +549,8 @@ function deleteTask(id) {
   const categories = ["All", ...new Set(topics.map(topic => topic.category))];
   const visibleTopics = topics.filter(topic =>
     (helpCategory === "All" || topic.category === helpCategory) &&
-    `${topic.title} ${topic.category} ${topic.description} ${topic.next}`.toLowerCase().includes(helpSearch.toLowerCase())
+    `${topic.title} ${topic.category} ${topic.description} ${topic.next}`.toLowerCase().includes(helpSearch.toLowerCase()) &&
+    (!helpFavoritesOnly || favorites.includes(topic.title))
   );
 
   if (!authUser) {
@@ -553,10 +580,22 @@ function deleteTask(id) {
         <div className="brand"><span className="brand-mark">✳</span><span>UniPath</span></div>
         <nav>
           <button onClick={() => setStep("home")}>Home</button>
+          <button onClick={() => setStep("calendar")}>Calendar</button>
+          <button className="notification-trigger" onClick={() => setNotificationsOpen(open => !open)} aria-expanded={notificationsOpen} aria-label={`Notifications, ${notificationItems.length} reminders`}>
+            Notifications {notificationItems.length > 0 && <span className="notification-count">{notificationItems.length}</span>}
+          </button>
           <span className="account-label">{authUser.name}</span>
           <button className="login" onClick={signOut}>Sign Out</button>
         </nav>
       </header>
+      {notificationsOpen && <aside className="notification-panel" aria-label="Notifications">
+        <div className="notification-heading"><strong>Notifications</strong><button onClick={() => setNotificationsOpen(false)} aria-label="Close notifications">×</button></div>
+        {notificationItems.length ? notificationItems.map(item => <article className="notification-item" key={item.id}>
+          <span className={item.days < 0 ? "notification-overdue" : "notification-upcoming"}>{item.days < 0 ? `${Math.abs(item.days)} days overdue` : item.days === 0 ? "Due today" : `Due in ${item.days} days`}</span>
+          <strong>{item.title}</strong><small>{item.kind} · {formatDate(item.date)}</small>
+        </article>) : <p className="muted">You're all caught up. No upcoming deadlines in the next seven days.</p>}
+        <button className="text-btn" onClick={() => { setNotificationsOpen(false); setStep("calendar"); }}>View calendar</button>
+      </aside>}
 
       <button className="demo-toggle" onClick={() => setDemoOpen(open => !open)}>{demoOpen ? "Hide Demo Controls" : "Demo Controls"}</button>
       {demoOpen && <aside className="demo-panel">
@@ -567,7 +606,7 @@ function deleteTask(id) {
           </select>
         </label>
         <div className="demo-nav-grid">
-          {[["Home","home"],["Create checklist","create"],["Checklist details","details"],["Generated checklist","generated"],["Dashboard","dashboard"],["Plan setup","plan-setup"],["My Plan","plan"],["Find Help","help"],["Events","events"],["Transportation","transportation"],["Community","community"],["Services","services"]].map(([label, destination]) =>
+          {[["Home","home"],["Create checklist","create"],["Checklist details","details"],["Generated checklist","generated"],["Dashboard","dashboard"],["Calendar","calendar"],["Plan setup","plan-setup"],["My Plan","plan"],["Find Help","help"],["Events","events"],["Transportation","transportation"],["Community","community"],["Services","services"]].map(([label, destination]) =>
             <button key={destination} onClick={() => { setStep(destination); setDemoOpen(false); }}>{label}</button>)}
         </div>
         <button className="demo-reset" onClick={resetDemoData}>Reset current account data</button>
@@ -787,6 +826,13 @@ function deleteTask(id) {
         <div className="step-label">YOUR PROGRESS</div>
         <h1>Task Progress</h1>
         <div className="progress-box"><div className="progress-bar"><span style={{ width: `${counts.percent}%` }} /></div><strong>{counts.percent}%</strong></div>
+        <div className="dashboard-overview-grid">
+          <article><span>Checklist</span><strong>{counts.done}/{counts.total}</strong><small>tasks completed</small></article>
+          <article><span>Roadmap</span><strong>{planCounts.done}/{planCounts.total}</strong><small>milestones completed</small></article>
+          <article><span>Next deadline</span><strong>{nextTask ? formatDate(nextTask.due) : "—"}</strong><small>{nextTask ? nextTask.name : "No pending dated tasks"}</small></article>
+          <article><span>Upcoming</span><strong>{notificationItems.length}</strong><small>deadlines within seven days or overdue</small></article>
+        </div>
+        <div className="dashboard-quick-actions"><button className="primary-btn" onClick={() => setStep("generated")}>Open checklist</button><button className="secondary-btn" onClick={() => setStep("plan")}>View roadmap</button><button className="secondary-btn" onClick={() => setStep("calendar")}>Open calendar</button></div>
         <div className="dashboard-columns">
           <section>
             <h2>Completed Tasks</h2>
@@ -841,6 +887,24 @@ function deleteTask(id) {
         <div className="flow-actions"><button className="text-btn" onClick={() => setStep("generated")}>← Back to checklist</button><button className="primary-btn" onClick={exportChecklist}>Download Checklist</button></div>
       </main>}
 
+      {step === "calendar" && <main className="result-page calendar-page">
+        <div className="step-label">YOUR SCHEDULE</div><h1>Calendar</h1>
+        <p className="intro">See your checklist tasks and roadmap milestones together. Select an item in its original page to update its details.</p>
+        <div className="calendar-toolbar"><button className="secondary-btn" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth()-1, 1))}>← Previous</button><h2>{calendarMonth.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</h2><button className="secondary-btn" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth()+1, 1))}>Next →</button></div>
+        <div className="calendar-grid" role="grid" aria-label="Monthly calendar">
+          {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(day => <div className="calendar-weekday" key={day}>{day}</div>)}
+          {Array.from({length: new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay()}, (_,i) => <div className="calendar-empty" key={`empty-${i}`} />)}
+          {Array.from({length: new Date(calendarMonth.getFullYear(), calendarMonth.getMonth()+1, 0).getDate()}, (_,i) => {
+            const day = i+1; const date = `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const events = allDatedItems.filter(item => item.date === date);
+            return <div className={`calendar-day ${date === new Date().toISOString().slice(0,10) ? "today" : ""}`} key={date}><strong>{day}</strong>{events.map(item => <button key={item.id} className={`calendar-event ${item.kind.toLowerCase()} ${item.done ? "done" : ""}`} title={`${item.kind}: ${item.title}`} onClick={() => setStep(item.kind === "Task" ? "generated" : "plan")}>{item.kind === "Task" ? "Task" : "Milestone"}: {item.title}</button>)}</div>;
+          })}
+        </div>
+        <div className="calendar-legend"><span className="task-dot" /> Checklist task <span className="milestone-dot" /> Roadmap milestone <span className="done-dot" /> Completed</div>
+        {!allDatedItems.length && <p className="muted">No dated tasks or milestones yet. Add dates in My Checklist or My Plan to see them here.</p>}
+        <div className="flow-actions"><button className="text-btn" onClick={() => setStep("home")}>← Home</button><button className="primary-btn" onClick={() => setStep("generated")}>Manage checklist</button></div>
+      </main>}
+
       {step === "plan-setup" && <main className="flow-page plan-setup-page">
         <div className="step-label">MY PLAN</div>
         <h1>Choose your transition</h1>
@@ -889,12 +953,13 @@ function deleteTask(id) {
         <div className="step-label">UT DALLAS AND COMMUNITY RESOURCES</div>
         <h1>Find Help</h1>
         <p className="intro">Explore university resources by topic. Each link takes you to a specific official page so you can find the information you need.</p>
-        <input className="search" value={helpSearch} onChange={event => setHelpSearch(event.target.value)} placeholder="Search OPT, travel, housing, tuition, advising..." />
+        <input aria-label="Search resources" className="search" value={helpSearch} onChange={event => setHelpSearch(event.target.value)} placeholder="Search OPT, travel, housing, tuition, advising..." />
         <div className="resource-filters">
           <label htmlFor="resource-category">Browse by topic</label>
           <select id="resource-category" value={helpCategory} onChange={event => setHelpCategory(event.target.value)}>
             {categories.map(category => <option key={category}>{category}</option>)}
           </select>
+          <label className="favorite-filter"><input type="checkbox" checked={helpFavoritesOnly} onChange={event => setHelpFavoritesOnly(event.target.checked)} /> Saved only</label>
           <span>{visibleTopics.length} resources</span>
         </div>
         <div className="topic-list">
@@ -903,11 +968,12 @@ function deleteTask(id) {
             <h2>{topic.title}</h2>
             <p>{topic.description}</p>
             <small>{topic.next}</small>
-            <a href={topic.url} target="_blank" rel="noreferrer">{topic.link} ↗</a>
+            <div className="resource-provenance"><span>Source: {new URL(topic.url).hostname.replace(/^www\./, "")}</span><span>External official resource</span></div>
+            <div className="resource-card-actions"><a href={topic.url} target="_blank" rel="noreferrer">{topic.link} ↗</a><button className="favorite-btn" aria-pressed={favorites.includes(topic.title)} onClick={() => toggleFavorite(topic.title)}>{favorites.includes(topic.title) ? "★ Saved" : "☆ Save"}</button></div>
           </article>)}
           {!visibleTopics.length && <p className="muted no-results">No resources match that search. Try a different keyword or select “All”.</p>}
         </div>
-        <p className="resource-note">Immigration information can change and depends on individual circumstances. Use official ISSO guidance and contact an advisor for advice about your situation.</p>
+        <p className="resource-note">Source transparency: these links point to university offices and their published resources. Always check the linked page for its current version and date. Immigration information can change and depends on individual circumstances; use official ISSO guidance and contact an advisor for advice about your situation. UniPath is a planning aid, not an immigration authority.</p>
         <div className="flow-actions"><button className="text-btn" onClick={() => setStep("home")}>← Home</button><a className="primary-btn link-btn" href="https://isso.utdallas.edu/" target="_blank" rel="noreferrer">Visit UTD ISSO ↗</a></div>
       </main>}
       {(["events", "transportation", "community", "services"].includes(step)) && (() => {
@@ -978,7 +1044,7 @@ function deleteTask(id) {
           <div className="step-label">CAMPUS AND COMMUNITY</div>
           <h1>{page.title}</h1>
           <p className="intro">{page.intro}</p>
-          <input className="search" value={communitySearch} onChange={event => setCommunitySearch(event.target.value)} placeholder={`Search ${page.title.toLowerCase()} resources...`} />
+          <input aria-label={`Search ${page.title} resources`} className="search" value={communitySearch} onChange={event => setCommunitySearch(event.target.value)} placeholder={`Search ${page.title.toLowerCase()} resources...`} />
           {page.groups.map(group => {
             const matches = group.items.filter(item => `${item[0]} ${item[1]}`.toLowerCase().includes(q));
             if (!matches.length) return null;
