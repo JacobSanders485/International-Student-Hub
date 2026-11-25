@@ -973,7 +973,7 @@ function deleteTask(id) {
           <div className="add-milestone-row"><input value={newMilestone} onChange={event => setNewMilestone(event.target.value)} onKeyDown={event => event.key === "Enter" && addMilestone()} placeholder="e.g. Attend international student orientation" /><button className="primary-btn" onClick={addMilestone}>Add milestone</button></div>
         </div>
         <p className="disclaimer">Milestones are general planning suggestions, not official immigration requirements or deadlines. Confirm individual requirements and dates with UTD ISSO and the relevant university office.</p>
-        <div className="flow-actions"><button className="text-btn" onClick={() => setStep("home")}>← Home</button><button className="primary-btn" onClick={() => setStep("help")}>Find resources</button></div>
+        <div className="flow-actions"><button className="text-btn" onClick={openPlanSetup}>← Choose your transition</button><button className="primary-btn" onClick={() => setStep("help")}>Find resources</button></div>
       </main>}
 
       {step === "help" && <main className="result-page help-page">
