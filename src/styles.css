@@ -248,6 +248,14 @@ footer { text-align:center; color:#999; font-size:10px; padding:22px 12px 30px; 
 .resource-category { display: inline-block; margin-bottom: 8px; padding: 4px 7px; border-radius: 20px; background: #f0f3ef; color: #526b55; font-size: 9px; font-weight: 700; }
 .resource-note { margin-top: 18px; color: #777; font-size: 10px; line-height: 1.5; }
 .no-results { grid-column: 1 / -1; padding: 25px; text-align: center; }
+
+/* Find Help: color-coded topics */
+.topic-chips { display:flex; flex-wrap:wrap; justify-content:center; gap:7px; margin:0 auto 16px; max-width:760px; }
+.topic-chip { --topic-color:#222; --topic-tint:#f2f2f2; border:1px solid var(--topic-tint); background:var(--topic-tint); color:var(--topic-color); border-radius:20px; padding:6px 11px; font-size:11px; font-weight:700; }
+.topic-chip.active { background:var(--topic-color); border-color:var(--topic-color); color:#fff; }
+.topic-list article.topic-card { border-left:4px solid var(--topic-color); }
+.topic-card .resource-category { background:var(--topic-tint); color:var(--topic-color); }
+.topic-card .resource-card-actions a { color:var(--topic-color); }
 @media (max-width: 700px) {
   .milestone-card { grid-template-columns: 1fr 1fr; }
   .milestone-copy { grid-column: 1 / -1; grid-row: 1; }

@@ -147,6 +147,28 @@ function initialState() {
   };
 }
 
+// Accent colors for Find Help topic categories (text color, tint background).
+const topicColors = {
+  "Immigration": ["#1d4f91", "#e8f0fb"],
+  "Employment": ["#6b3fa0", "#f1eafa"],
+  "Travel": ["#0f6f7a", "#e3f4f5"],
+  "Getting Started": ["#2f7d32", "#e8f5e9"],
+  "Graduation": ["#9a5b00", "#fdf1dc"],
+  "Documents": ["#4a5563", "#eef0f3"],
+  "Campus Support": ["#b2416b", "#fbe9f0"],
+  "Academics": ["#3949ab", "#eaecf8"],
+  "Money": ["#1b7a4b", "#e4f4ea"],
+  "Wellbeing": ["#8e3fae", "#f5e9fa"],
+  "Campus Life": ["#c25a17", "#fcede2"],
+  "Getting Around": ["#00796b", "#e0f2ef"],
+  "Safety": ["#b42318", "#fdecea"]
+};
+
+function topicStyle(category) {
+  const [color, tint] = topicColors[category] || ["#526b55", "#f0f3ef"];
+  return { "--topic-color": color, "--topic-tint": tint };
+}
+
 function formatDate(value) {
   if (!value) return "No date";
   return new Date(`${value}T12:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
@@ -954,16 +976,19 @@ function deleteTask(id) {
         <h1>Find Help</h1>
         <p className="intro">Explore university resources by topic. Each link takes you to a specific official page so you can find the information you need.</p>
         <input aria-label="Search resources" className="search" value={helpSearch} onChange={event => setHelpSearch(event.target.value)} placeholder="Search OPT, travel, housing, tuition, advising..." />
+        <div className="topic-chips" role="group" aria-label="Browse by topic">
+          {categories.map(category => <button key={category} type="button"
+            className={`topic-chip ${helpCategory === category ? "active" : ""}`}
+            style={category === "All" ? undefined : topicStyle(category)}
+            aria-pressed={helpCategory === category}
+            onClick={() => setHelpCategory(category)}>{category}</button>)}
+        </div>
         <div className="resource-filters">
-          <label htmlFor="resource-category">Browse by topic</label>
-          <select id="resource-category" value={helpCategory} onChange={event => setHelpCategory(event.target.value)}>
-            {categories.map(category => <option key={category}>{category}</option>)}
-          </select>
           <label className="favorite-filter"><input type="checkbox" checked={helpFavoritesOnly} onChange={event => setHelpFavoritesOnly(event.target.checked)} /> Saved only</label>
           <span>{visibleTopics.length} resources</span>
         </div>
         <div className="topic-list">
-          {visibleTopics.map(topic => <article key={topic.title}>
+          {visibleTopics.map(topic => <article key={topic.title} className="topic-card" style={topicStyle(topic.category)}>
             <span className="resource-category">{topic.category}</span>
             <h2>{topic.title}</h2>
             <p>{topic.description}</p>
