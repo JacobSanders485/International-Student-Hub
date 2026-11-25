@@ -350,6 +350,16 @@ footer { text-align:center; color:#999; font-size:10px; padding:22px 12px 30px; 
 .plan-target-banner span { color:#777; font-size:10px; }
 .plan-target-banner strong { color:#183d39; font-size:12px; }
 .plan-target-banner .text-btn { margin-left:auto; font-size:10px; }
+
+/* Plan → checklist hierarchy */
+.plan-checklist-card { width:min(560px,100%); margin:0 auto 6px; padding:15px; border:1px solid #e2e9e4; border-radius:9px; background:#fbfdfb; }
+.plan-hierarchy { display:flex; flex-wrap:wrap; align-items:center; gap:6px 9px; margin-bottom:12px; color:#666; font-size:10px; }
+.plan-hierarchy b { color:#183d39; }
+.plan-checklist-row { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.plan-checklist-row h2 { margin:0 0 4px; font-size:14px; }
+.plan-checklist-row small { color:#777; font-size:11px; line-height:1.45; }
+.plan-checklist-card .home-progress { margin:12px 0 0; }
+@media (max-width:480px) { .plan-checklist-row { flex-direction:column; align-items:stretch; } }
 .plan-roadmap { display:grid; gap:24px; margin-top:28px; }
 .roadmap-phase { position:relative; padding-left:18px; border-left:2px solid #dce8df; }
 .roadmap-phase-heading { display:flex; align-items:center; gap:12px; margin:0 0 13px -30px; }
