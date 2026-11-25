@@ -964,7 +964,7 @@ function deleteTask(id) {
         </div>
         <div className="topic-list">
           {visibleTopics.map(topic => <article key={topic.title}>
-            <span className="resource-category">{topic.category}</span>
+            <span className={`resource-category cat-${topic.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "")}`}>{topic.category}</span>
             <h2>{topic.title}</h2>
             <p>{topic.description}</p>
             <small>{topic.next}</small>

@@ -246,6 +246,19 @@ footer { text-align:center; color:#999; font-size:10px; padding:22px 12px 30px; 
 .topic-list article a { margin-top: auto; color: #1b5d55; font-size: 11px; font-weight: 700; text-decoration: none; }
 .topic-list article a:hover { text-decoration: underline; }
 .resource-category { display: inline-block; margin-bottom: 8px; padding: 4px 7px; border-radius: 20px; background: #f0f3ef; color: #526b55; font-size: 9px; font-weight: 700; }
+.resource-category.cat-immigration { background: #e8f1fb; color: #1f4f86; }
+.resource-category.cat-employment { background: #eaf7ef; color: #1f6b3a; }
+.resource-category.cat-travel { background: #f3eefb; color: #5b3d8a; }
+.resource-category.cat-getting-started { background: #eaf6f4; color: #1f6a63; }
+.resource-category.cat-graduation { background: #fff3e8; color: #9a4d12; }
+.resource-category.cat-documents { background: #f1f1f1; color: #444; }
+.resource-category.cat-campus-support { background: #eef6e8; color: #3d6b2f; }
+.resource-category.cat-academics { background: #eef0fa; color: #3a3f8c; }
+.resource-category.cat-money { background: #f7f3e4; color: #7a5b12; }
+.resource-category.cat-wellbeing { background: #fdeef2; color: #8a2f4b; }
+.resource-category.cat-campus-life { background: #e9f5fb; color: #216987; }
+.resource-category.cat-getting-around { background: #f0f4e8; color: #4d6a28; }
+.resource-category.cat-safety { background: #fdeceb; color: #8f2d2a; }
 .resource-note { margin-top: 18px; color: #777; font-size: 10px; line-height: 1.5; }
 .no-results { grid-column: 1 / -1; padding: 25px; text-align: center; }
 @media (max-width: 700px) {
