@@ -16,9 +16,12 @@ h1 { font-size:30px; text-align:center; margin:0 0 10px; letter-spacing:-.7px; }
 .intro { color:#666; text-align:center; font-size:14px; line-height:1.5; margin:0 auto 28px; max-width:650px; }
 .home-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
 .home-secondary { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:20px; }
-.home-card, .type-card { text-align:left; background:white; border:1px solid #e6e6e6; border-radius:8px; padding:10px; color:#151515; box-shadow:0 2px 7px #00000008; display:flex; flex-direction:column; }
+.home-card, .type-card { text-align:left; background:white; border:1px solid #e6e6e6; border-radius:8px; padding:10px; color:#151515; box-shadow:0 2px 7px #00000008; display:flex; flex-direction:column; min-height:100%; }
 .home-card strong, .type-card strong { font-size:13px; margin:11px 2px 5px; }
 .home-card small, .type-card small { color:#777; font-size:11px; line-height:1.4; margin:0 2px; min-height:30px; }
+.home-card > .card-link,
+.home-card > .card-link-button,
+.home-card > .card-actions { margin-top: auto; }
 .checklist-home-card {
   cursor: default;
 }
@@ -42,6 +45,7 @@ h1 { font-size:30px; text-align:center; margin:0 0 10px; letter-spacing:-.7px; }
   display: flex;
   gap: 7px;
   flex-wrap: wrap;
+  align-items: center;
   margin: 9px 2px 2px;
 }
 
@@ -202,19 +206,36 @@ footer { text-align:center; color:#999; font-size:10px; padding:22px 12px 30px; 
   .topbar { padding:0 15px; }
   .topbar nav { gap:8px; }
   .topbar nav button { font-size:10px; }
-  .home-page, .flow-page, .result-page { width:calc(100% - 28px); padding-top:30px; }
-  .home-cards { grid-template-columns:1fr 1fr; }
-  .home-secondary { grid-template-columns:1fr 1fr; }
+  .home-page, .flow-page, .result-page { width:calc(100% - 28px); padding:30px 0 max(40px, env(safe-area-inset-bottom)); }
+  .home-cards { grid-template-columns:1fr; gap:14px; }
+  .home-secondary { grid-template-columns:1fr 1fr; gap:12px; }
   .type-grid { grid-template-columns:1fr 1fr; gap:10px; }
   .type-card { min-height:175px; }
   .art { height:80px; }
   .dashboard-columns, .topic-list { grid-template-columns:1fr; gap:18px; }
+  .flow-actions { flex-wrap: wrap; gap:12px; }
+  .resource-filters { flex-wrap: wrap; align-items: flex-start; }
+  .resource-filters span { margin-left: 0; width: 100%; }
+  .resource-filters select { min-width: 0; width: 100%; }
   th, td { padding:9px 8px; }
   td input[type="date"] { width:120px; }
 }
-@media (max-width:390px) {
-  .brand { font-size:11px; }
-  .home-cards, .type-grid { grid-template-columns:1fr; }
+@media (max-width:430px) {
+  .brand { font-size:12px; }
+  .home-cards, .type-grid, .home-secondary { grid-template-columns:1fr; }
+  .home-card, .type-card, .mini-card { width: 100%; }
+  .card-actions { width: 100%; }
+  .card-actions .card-link-button { flex: 1 1 auto; text-align: center; }
+  .home-campus-image { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; }
+  h1 { font-size: 24px; }
+  .intro { font-size: 13px; margin-bottom: 20px; }
+  .checklist-overview { grid-template-columns: 1fr; }
+  .dashboard-quick-actions { flex-direction: column; align-items: stretch; }
+  .dashboard-quick-actions .primary-btn,
+  .dashboard-quick-actions .secondary-btn { width: 100%; text-align: center; }
+  .add-milestone-row { flex-direction: column; }
+  .add-milestone-row .primary-btn { width: 100%; }
+  .notification-panel { right: 12px; left: 12px; width: auto; }
 }
 
 /* Transition plan and resource directory */
