@@ -645,7 +645,7 @@ function deleteTask(id) {
                     className="card-link-button primary-small"
                     onClick={() => setStep("dashboard")}
                   >
-                    Enter
+                    Dashboard
                   </button>
 
                   <button
@@ -819,7 +819,7 @@ function deleteTask(id) {
           </div>
         </div>
         <p className="disclaimer">These are illustrative planning tasks, not official immigration instructions or legal advice. Confirm requirements with UTD ISSO.</p>
-        <div className="flow-actions"><button className="text-btn" onClick={() => setStep("details")}>← Edit details</button><button className="primary-btn" onClick={() => setStep("dashboard")}>View Dashboard</button></div>
+        <div className="flow-actions"><button className="text-btn" onClick={() => setStep("create")}>← Change plan</button><button className="primary-btn" onClick={() => setStep("dashboard")}>View Dashboard</button></div>
       </main>}
 
       {step === "dashboard" && <main className="result-page dashboard-page">
