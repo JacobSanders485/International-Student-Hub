@@ -411,7 +411,22 @@ function App() {
       };
     });
     setPlan({ created: true, type: selectedPlanType, targetDate, milestones });
+    // Every plan owns a checklist: create one for this transition if the student has none yet.
+    if (!state.created) {
+      setState(current => ({ ...current, created: true, type: selectedPlanType,
+        targetDate: targetDate || current.targetDate, tasks: makeTasks(selectedPlanType, targetDate || current.targetDate) }));
+      setChosenType(selectedPlanType);
+    }
     setStep("plan");
+  }
+
+  function createChecklistForPlan() {
+    if (state.created && !window.confirm(`Replace your current ${state.type} checklist with a ${plan.type} checklist?`)) return;
+    const targetDate = plan.targetDate || state.targetDate;
+    setState(current => ({ ...current, created: true, type: plan.type, targetDate, tasks: makeTasks(plan.type, targetDate) }));
+    setChosenType(plan.type);
+    setFilter("All");
+    setStep("generated");
   }
 
   function updateMilestone(id, updates) {
@@ -675,7 +690,7 @@ function deleteTask(id) {
             {plan.created ? (
               <>
                 <small>Transition roadmap · {planCounts.done}/{planCounts.total} milestones completed</small>
-                <small>Transition: {plan.type}</small>
+                <small>Transition: {plan.type}{state.created && state.type === plan.type ? ` · Checklist ${counts.done}/${counts.total}` : ""}</small>
                 <div className="home-progress"><span style={{ width: `${planCounts.percent}%` }} /></div>
                 <div className="card-actions">
                   <button className="card-link-button primary-small" onClick={() => setStep("plan")}>View plan</button>
@@ -921,13 +936,28 @@ function deleteTask(id) {
       {step === "plan" && <main className="result-page plan-page">
         <div className="step-label">YOUR BIG-PICTURE ROADMAP</div>
         <h1>My Plan</h1>
-        <p className="intro">Your transition roadmap for {plan.type}. Follow the major phases, adjust target dates, and track progress toward your next chapter.</p>
+        <p className="intro">Your transition roadmap for {plan.type}. Your plan holds the big-picture milestones; its checklist holds the specific tasks that get each milestone done.</p>
         <div className="plan-target-banner"><span>Target date</span><strong>{plan.targetDate ? formatDate(plan.targetDate) : "Not set"}</strong><button className="text-btn" onClick={openPlanSetup}>Change roadmap</button></div>
         <div className="plan-progress-summary">
           <div className="home-progress"><span style={{ width: `${planCounts.percent}%` }} /></div>
           <strong>{planCounts.percent}% complete</strong>
           <small>{planCounts.done} of {planCounts.total} milestones completed</small>
         </div>
+        <section className="plan-checklist-card" aria-label="This plan's checklist">
+          <div className="plan-hierarchy">
+            <span><b>Plan</b> · milestones</span><span aria-hidden="true">→</span><span><b>Checklist</b> · day-to-day tasks</span>
+          </div>
+          {state.created && state.type === plan.type ? <>
+            <div className="plan-checklist-row">
+              <div><h2>{plan.type} checklist</h2><small>{counts.done} of {counts.total} tasks completed{nextTask ? ` · next due ${formatDate(nextTask.due)}` : ""}</small></div>
+              <button className="primary-btn" onClick={() => setStep("generated")}>Open checklist</button>
+            </div>
+            <div className="home-progress"><span style={{ width: `${counts.percent}%` }} /></div>
+          </> : <div className="plan-checklist-row">
+            <div><h2>This plan doesn't have a checklist yet</h2><small>{state.created ? `Your current checklist is for ${state.type}. Create one for ${plan.type} to match this plan.` : `Create the task list for ${plan.type}.`}</small></div>
+            <button className="primary-btn" onClick={createChecklistForPlan}>Create checklist</button>
+          </div>}
+        </section>
         <div className="plan-roadmap">
           {planPhases.map((phase, phaseIndex) => <section className="roadmap-phase" key={phase.title}>
             <div className="roadmap-phase-heading"><span className="phase-number">{phaseIndex + 1}</span><div><h2>{phase.title}</h2><p>{phase.description}</p></div><small>{phase.items.filter(item => item.done).length}/{phase.items.length} complete</small></div>
