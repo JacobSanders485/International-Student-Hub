@@ -457,3 +457,47 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .calendar-event { padding:3px; font-size:8px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
+
+/* iPhone / small-screen polish */
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+body { overflow-x:hidden; -webkit-tap-highlight-color:transparent; }
+.topbar { padding-top:env(safe-area-inset-top); }
+.demo-toggle { right:calc(18px + env(safe-area-inset-right)); bottom:calc(18px + env(safe-area-inset-bottom)); }
+.demo-panel { bottom:calc(68px + env(safe-area-inset-bottom)); }
+@media (max-width:600px) {
+  /* iOS Safari zooms into any focused field under 16px */
+  input, select, textarea { font-size:16px !important; }
+  .topbar { padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left)); }
+  .topbar nav button { min-height:40px; padding:0 4px; font-size:12px; }
+  .topbar nav .login { padding:8px 12px; }
+  h1 { font-size:24px; }
+  .home-page, .flow-page, .result-page { width:calc(100% - 32px); padding:24px 0 96px; }
+  .home-cards { grid-template-columns:1fr; gap:14px; }
+  .home-card .art { height:120px; }
+  .home-card strong, .type-card strong { font-size:15px; }
+  .home-card small, .type-card small { font-size:12px; min-height:0; }
+  .card-link-button { min-height:40px; padding:9px 14px; font-size:12px; }
+  .primary-btn, .secondary-btn { min-height:44px; }
+  .text-btn { min-height:44px; }
+  .flow-actions { flex-wrap:wrap; }
+  .flow-actions .primary-btn { flex:1 1 auto; text-align:center; }
+  .dashboard-quick-actions > * { flex:1 1 100%; }
+  .resource-filters { flex-wrap:wrap; }
+  .resource-filters span { margin-left:0; }
+  .resource-filters select { flex:1; min-width:0; }
+  .action-task-card, .milestone-card { padding:14px; }
+  .action-task-check input, .milestone-check input, .dashboard-task input { width:20px; height:20px; }
+  .action-task-check, .milestone-check { font-size:12px; }
+  .delete-task-btn { min-height:40px; padding:8px 12px; font-size:12px; }
+  .add-task-section, .add-milestone { padding:16px; }
+  .notification-panel { position:fixed; left:12px; right:12px; top:calc(70px + env(safe-area-inset-top)); width:auto; }
+  .demo-toggle { padding:9px 13px; font-size:11px; opacity:.9; }
+  footer { padding-bottom:calc(80px + env(safe-area-inset-bottom)); }
+}
+@media (max-width:390px) {
+  .home-secondary { grid-template-columns:1fr; }
+  .dashboard-overview-grid { grid-template-columns:1fr 1fr; gap:8px; }
+  .dashboard-overview-grid article strong { font-size:17px; }
+  .calendar-event { font-size:0; height:6px; padding:0; border-left-width:0; border-radius:3px; background:#2768a5; }
+  .calendar-event.milestone { background:#9a6a20; }
+}
