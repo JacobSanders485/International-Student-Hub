@@ -627,7 +627,7 @@ function deleteTask(id) {
 
             {state.created ? (
               <>
-                <small>Action list · {counts.done}/{counts.total} tasks completed</small>
+                <small>Tasks for your plan · {counts.done}/{counts.total} completed</small>
 
                 <small>
                   Next deadline:{" "}
@@ -658,7 +658,7 @@ function deleteTask(id) {
               </>
             ) : (
               <>
-                <small>Create a personalized transition checklist.</small>
+                <small>Action tasks that sit under your transition plan.</small>
 
                 <button
                   className="card-link-button primary-small"
@@ -674,8 +674,8 @@ function deleteTask(id) {
             <strong>My Plan</strong>
             {plan.created ? (
               <>
-                <small>Transition roadmap · {planCounts.done}/{planCounts.total} milestones completed</small>
-                <small>Transition: {plan.type}</small>
+                <small>Roadmap for your transition · {planCounts.done}/{planCounts.total} milestones</small>
+                <small>Each plan includes a checklist of tasks · {plan.type}</small>
                 <div className="home-progress"><span style={{ width: `${planCounts.percent}%` }} /></div>
                 <div className="card-actions">
                   <button className="card-link-button primary-small" onClick={() => setStep("plan")}>View plan</button>
@@ -684,7 +684,7 @@ function deleteTask(id) {
               </>
             ) : (
               <>
-                <small>Organize your transition timeline.</small>
+                <small>Start with a roadmap; then work the checklist underneath.</small>
                 <button className="card-link-button primary-small" onClick={openPlanSetup}>Create plan</button>
               </>
             )}
@@ -737,9 +737,9 @@ function deleteTask(id) {
       </main>}
 
       {step === "generated" && <main className="result-page">
-        <div className="step-label">YOUR ACTION LIST</div>
+        <div className="step-label">CHECKLIST UNDER YOUR PLAN</div>
         <h1>My Checklist</h1>
-        <p className="intro">{state.type} · {state.current} → {state.target}</p>
+        <p className="intro">Action tasks for your {state.type} plan · {state.current} → {state.target}</p>
         <div className="checklist-overview">
           <div className="checklist-stat"><strong>{counts.remaining}</strong><span>Still to do</span></div>
           <div className="checklist-stat"><strong>{counts.done}</strong><span>Completed</span></div>
@@ -919,9 +919,9 @@ function deleteTask(id) {
       </main>}
 
       {step === "plan" && <main className="result-page plan-page">
-        <div className="step-label">YOUR BIG-PICTURE ROADMAP</div>
+        <div className="step-label">YOUR TRANSITION PLAN</div>
         <h1>My Plan</h1>
-        <p className="intro">Your transition roadmap for {plan.type}. Follow the major phases, adjust target dates, and track progress toward your next chapter.</p>
+        <p className="intro">Your roadmap for {plan.type}. Milestones are the big phases; use My Checklist for the day-to-day tasks under this plan.</p>
         <div className="plan-target-banner"><span>Target date</span><strong>{plan.targetDate ? formatDate(plan.targetDate) : "Not set"}</strong><button className="text-btn" onClick={openPlanSetup}>Change roadmap</button></div>
         <div className="plan-progress-summary">
           <div className="home-progress"><span style={{ width: `${planCounts.percent}%` }} /></div>
