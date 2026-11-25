@@ -667,12 +667,12 @@ function deleteTask(id) {
                     className="card-link-button primary-small"
                     onClick={() => setStep("dashboard")}
                   >
-                    Enter
+                    Dashboard
                   </button>
 
                   <button
                     className="card-link-button"
-                    onClick={() => setStep("create")}
+                    onClick={() => setStep("generated")}
                   >
                     Edit checklist
                   </button>
@@ -732,7 +732,7 @@ function deleteTask(id) {
             <span className={`art ${type.art}`} /><strong>{type.name}</strong><small>{type.detail}</small><span className="card-link">Select →</span>
           </button>)}
         </div>
-        <div className="flow-actions"><button className="text-btn" onClick={() => setStep("home")}>← Back</button><button className="primary-btn" onClick={() => setStep("details")}>Continue</button></div>
+        <div className="flow-actions"><button className="text-btn" onClick={() => setStep(state.created ? "generated" : "home")}>{state.created ? "← Back to checklist" : "← Back"}</button><button className="primary-btn" onClick={() => setStep("details")}>Continue</button></div>
       </main>}
 
       {step === "details" && <main className="flow-page details-page">
@@ -761,7 +761,12 @@ function deleteTask(id) {
       {step === "generated" && <main className="result-page">
         <div className="step-label">YOUR ACTION LIST</div>
         <h1>My Checklist</h1>
-        <p className="intro">{state.type} · {state.current} → {state.target}</p>
+        <p className="intro">Your day-to-day action items. Check off tasks, adjust dates, and add your own.</p>
+        <div className="plan-target-banner">
+          <span>Preparing for</span>
+          <strong>{state.type} · {state.current} → {state.target}</strong>
+          <button className="text-btn" onClick={() => { setChosenType(state.type); setStep("create"); }}>Change plan</button>
+        </div>
         <div className="checklist-overview">
           <div className="checklist-stat"><strong>{counts.remaining}</strong><span>Still to do</span></div>
           <div className="checklist-stat"><strong>{counts.done}</strong><span>Completed</span></div>
@@ -841,7 +846,7 @@ function deleteTask(id) {
           </div>
         </div>
         <p className="disclaimer">These are illustrative planning tasks, not official immigration instructions or legal advice. Confirm requirements with UTD ISSO.</p>
-        <div className="flow-actions"><button className="text-btn" onClick={() => setStep("details")}>← Edit details</button><button className="primary-btn" onClick={() => setStep("dashboard")}>View Dashboard</button></div>
+        <div className="flow-actions"><span /><button className="primary-btn" onClick={() => setStep("dashboard")}>View Dashboard</button></div>
       </main>}
 
       {step === "dashboard" && <main className="result-page dashboard-page">
